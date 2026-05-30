@@ -6,6 +6,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { clearCurrentFamily, fetchFamilyById } from '@/store/slices/familySlice';
+import ClickablePhoto from '@/components/ClickablePhoto';
 
 export default function FamilyDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -35,13 +36,17 @@ export default function FamilyDetailPage() {
         <ArrowLeft className="w-4 h-4" /> Back to Families
       </Link>
 
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">{current.headOfFamily.name}&apos;s Family</h1>
+      <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6 break-words">
+        {current.headOfFamily.name}&apos;s Family
+      </h1>
 
-      <div className="grid lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <DetailCard title="Head of Family">
+          <MemberPhoto photo={current.headOfFamily.photo} name={current.headOfFamily.name} />
           <DetailRow label="Name" value={current.headOfFamily.name} />
           <DetailRow label="Mobile" value={current.headOfFamily.mobile || 'N/A'} />
           <DetailRow label="Email" value={current.headOfFamily.email || 'N/A'} />
+          <DetailRow label="Marital Status" value={current.headOfFamily.maritalStatus || 'Not recorded'} />
         </DetailCard>
 
         <DetailCard title="Address">
@@ -56,6 +61,7 @@ export default function FamilyDetailPage() {
         </DetailCard>
 
         <DetailCard title="Father">
+          <MemberPhoto photo={current.parents.father.photo} name={current.parents.father.name} />
           <DetailRow label="Name" value={current.parents.father.name} />
           <DetailRow label="Occupation" value={current.parents.father.occupation || 'N/A'} />
           <DetailRow label="Income" value={`₹${current.parents.father.income || 0}/mo`} />
@@ -64,12 +70,30 @@ export default function FamilyDetailPage() {
         </DetailCard>
 
         <DetailCard title="Mother">
+          <MemberPhoto photo={current.parents.mother.photo} name={current.parents.mother.name} />
           <DetailRow label="Name" value={current.parents.mother.name} />
           <DetailRow label="Occupation" value={current.parents.mother.occupation || 'N/A'} />
           <DetailRow label="Income" value={`₹${current.parents.mother.income || 0}/mo`} />
           <DetailRow label="Education" value={current.parents.mother.education || 'N/A'} />
           <DetailRow label="Mobile" value={current.parents.mother.mobile || 'N/A'} />
         </DetailCard>
+
+        {(current.spouse?.name || current.spouse?.mobile || current.spouse?.photo) && (
+          <DetailCard title={current.headOfFamily.maritalStatus === 'Widowed' ? 'Spouse (Deceased)' : 'Spouse'}>
+            <MemberPhoto photo={current.spouse?.photo} name={current.spouse?.name || 'Spouse'} />
+            <DetailRow label="Name" value={current.spouse?.name || 'N/A'} />
+            <DetailRow label="Mobile" value={current.spouse?.mobile || 'N/A'} />
+          </DetailCard>
+        )}
+
+        {current.headOfFamily.maritalStatus === 'Married' &&
+          !current.spouse?.name &&
+          !current.spouse?.mobile &&
+          !current.spouse?.photo && (
+            <DetailCard title="Spouse">
+              <p className="text-sm text-gray-500">No spouse details recorded.</p>
+            </DetailCard>
+          )}
 
         <DetailCard title="Income">
           <DetailRow label="Total Family Income" value={`₹${current.totalFamilyIncome?.toLocaleString()}/mo`} />
@@ -79,6 +103,7 @@ export default function FamilyDetailPage() {
           <DetailCard title="Co-Residents">
             {current.coResidents.map((r, i) => (
               <div key={r._id || i} className="pb-2 mb-2 border-b border-gray-100 last:border-0">
+                <MemberPhoto photo={r.photo} name={r.name} size="sm" />
                 <DetailRow label="Name" value={r.name} />
                 <DetailRow label="Relation" value={r.relation || 'N/A'} />
                 <DetailRow label="Age" value={String(r.age || 'N/A')} />
@@ -90,9 +115,10 @@ export default function FamilyDetailPage() {
 
         {current.children?.length > 0 && (
           <DetailCard title="Children" className="lg:col-span-2">
-            <div className="grid sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {current.children.map((c, i) => (
                 <div key={c._id || i} className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                  <MemberPhoto photo={c.photo} name={c.name} size="sm" />
                   <div className="flex items-center justify-between gap-2 mb-2">
                     <p className="font-medium text-gray-800">{c.name}</p>
                     <span className={c.studentType === 'College' ? 'badge-college' : 'badge-school'}>
@@ -126,6 +152,30 @@ export default function FamilyDetailPage() {
   );
 }
 
+function MemberPhoto({
+  photo,
+  name,
+  size = 'md',
+}: {
+  photo?: string;
+  name: string;
+  size?: 'sm' | 'md';
+}) {
+  if (!photo) return null;
+
+  const dimensions = size === 'sm' ? 'w-16 h-16' : 'w-24 h-24';
+
+  return (
+    <div className="mb-3">
+      <ClickablePhoto
+        photo={photo}
+        name={name}
+        imageClassName={`${dimensions} rounded-xl object-cover border border-gray-200 shadow-sm`}
+      />
+    </div>
+  );
+}
+
 function DetailCard({
   title,
   children,
@@ -145,9 +195,9 @@ function DetailCard({
 
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex justify-between text-sm">
-      <span className="text-gray-500">{label}</span>
-      <span className="text-gray-800 font-medium text-right max-w-[60%]">{value}</span>
+    <div className="flex flex-col sm:flex-row sm:justify-between gap-0.5 sm:gap-3 text-sm py-1">
+      <span className="text-gray-500 shrink-0">{label}</span>
+      <span className="text-gray-800 font-medium sm:text-right sm:max-w-[60%] break-words">{value}</span>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-# Soni Samaj Admin Panel
+# Soni Samaj Uttarbhartiya Trust Surat Admin Panel
 
 Admin dashboard with JWT auth and filters. See root [README](../README.md).
 

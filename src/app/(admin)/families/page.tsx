@@ -10,6 +10,7 @@ import { FamilyFilters } from '@/types';
 import DeleteConfirmModal from '@/components/DeleteConfirmModal';
 import { useDeleteModal } from '@/hooks/useDeleteModal';
 import { canDeleteFamilies } from '@/lib/permissions';
+import ClickablePhoto from '@/components/ClickablePhoto';
 
 export default function FamiliesPage() {
   const dispatch = useAppDispatch();
@@ -61,7 +62,7 @@ export default function FamiliesPage() {
 
   return (
     <>
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">All Families</h1>
+      <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6">All Families</h1>
 
       {deleteError && (
         <ErrorBanner message={deleteError} onDismiss={() => setDeleteError(null)} />
@@ -90,8 +91,60 @@ export default function FamiliesPage() {
         ) : list.length === 0 ? (
           <p className="p-6 text-gray-500">No families found.</p>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+          <>
+            <div className="md:hidden divide-y divide-gray-100">
+              {list.map((family) => (
+                <div key={family._id} className="p-4 space-y-2">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-start gap-3 min-w-0">
+                      <HeadPhoto photo={family.headOfFamily.photo} name={family.headOfFamily.name} />
+                      <div className="min-w-0">
+                        <p className="font-medium text-gray-800 break-words">{family.headOfFamily.name}</p>
+                        <p className="text-xs text-gray-400 mt-0.5">
+                          {new Date(family.createdAt).toLocaleDateString('en-IN')}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex gap-1 shrink-0">
+                      <Link
+                        href={`/families/${family._id}`}
+                        className="p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center text-saffron-600 hover:bg-saffron-50 rounded-lg"
+                        aria-label={`View ${family.headOfFamily.name}`}
+                      >
+                        <Eye className="w-5 h-5" />
+                      </Link>
+                      {canDelete && (
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteClick(family._id, family.headOfFamily.name)}
+                          className="p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center text-red-500 hover:bg-red-50 rounded-lg"
+                          aria-label={`Delete ${family.headOfFamily.name}`}
+                        >
+                          <Trash2 className="w-5 h-5" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+                    <p className="text-gray-500">Mobile</p>
+                    <p className="font-mono text-gray-800">{family.headOfFamily.mobile}</p>
+                    <p className="text-gray-500">City</p>
+                    <p className="text-gray-800">{family.address.city}</p>
+                    <p className="text-gray-500">District</p>
+                    <p className="text-gray-800">{family.address.district}</p>
+                    <p className="text-gray-500">Income</p>
+                    <p className="font-medium text-gray-800">₹{family.totalFamilyIncome?.toLocaleString()}</p>
+                    <p className="text-gray-500">Children</p>
+                    <p>
+                      <span className="badge bg-saffron-100 text-saffron-700">{family.children?.length || 0}</span>
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-sm min-w-[640px]">
               <thead className="bg-saffron-50 text-left">
                 <tr>
                   <th className="px-4 py-3 font-medium">Head Name</th>
@@ -107,8 +160,13 @@ export default function FamiliesPage() {
                 {list.map((family) => (
                   <tr key={family._id} className="border-t border-gray-100 table-row-hover">
                     <td className="px-4 py-3">
-                      <p className="font-medium text-gray-800">{family.headOfFamily.name}</p>
-                      <p className="text-xs text-gray-400">{new Date(family.createdAt).toLocaleDateString('en-IN')}</p>
+                      <div className="flex items-center gap-3">
+                        <HeadPhoto photo={family.headOfFamily.photo} name={family.headOfFamily.name} />
+                        <div>
+                          <p className="font-medium text-gray-800">{family.headOfFamily.name}</p>
+                          <p className="text-xs text-gray-400">{new Date(family.createdAt).toLocaleDateString('en-IN')}</p>
+                        </div>
+                      </div>
                     </td>
                     <td className="px-4 py-3 font-mono text-sm">{family.headOfFamily.mobile}</td>
                     <td className="px-4 py-3">{family.address.city}</td>
@@ -118,15 +176,20 @@ export default function FamiliesPage() {
                       <span className="badge bg-saffron-100 text-saffron-700">{family.children?.length || 0}</span>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex gap-2">
-                        <Link href={`/families/${family._id}`} className="p-1.5 text-saffron-600 hover:bg-saffron-50 rounded-lg">
+                      <div className="flex gap-1">
+                        <Link
+                          href={`/families/${family._id}`}
+                          className="p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center text-saffron-600 hover:bg-saffron-50 rounded-lg"
+                          aria-label={`View ${family.headOfFamily.name}`}
+                        >
                           <Eye className="w-4 h-4" />
                         </Link>
                         {canDelete && (
                           <button
                             type="button"
                             onClick={() => handleDeleteClick(family._id, family.headOfFamily.name)}
-                            className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg"
+                            className="p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center text-red-500 hover:bg-red-50 rounded-lg"
+                            aria-label={`Delete ${family.headOfFamily.name}`}
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -137,18 +200,19 @@ export default function FamiliesPage() {
                 ))}
               </tbody>
             </table>
-          </div>
+            </div>
+          </>
         )}
 
         {pagination && pagination.totalPages > 1 && (
-          <div className="flex items-center justify-between p-4 border-t border-gray-100">
-            <span className="text-sm text-gray-500">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 border-t border-gray-100">
+            <span className="text-sm text-gray-500 text-center sm:text-left">
               Page {pagination.page} of {pagination.totalPages} ({pagination.total} total)
             </span>
-            <div className="flex gap-2">
+            <div className="flex gap-2 justify-center sm:justify-end">
               <button
                 type="button"
-                className="btn-secondary text-sm py-1.5"
+                className="btn-secondary text-sm py-2 min-h-[44px] flex-1 sm:flex-none"
                 disabled={pagination.page <= 1}
                 onClick={() => setFilters((f) => ({ ...f, page: (f.page || 1) - 1 }))}
               >
@@ -156,7 +220,7 @@ export default function FamiliesPage() {
               </button>
               <button
                 type="button"
-                className="btn-secondary text-sm py-1.5"
+                className="btn-secondary text-sm py-2 min-h-[44px] flex-1 sm:flex-none"
                 disabled={pagination.page >= pagination.totalPages}
                 onClick={() => setFilters((f) => ({ ...f, page: (f.page || 1) + 1 }))}
               >
@@ -177,6 +241,18 @@ export default function FamiliesPage() {
         loading={deleteModal.loading}
       />
     </>
+  );
+}
+
+function HeadPhoto({ photo, name }: { photo?: string; name: string }) {
+  return (
+    <ClickablePhoto
+      photo={photo}
+      name={name}
+      imageClassName="w-10 h-10 rounded-lg object-cover border border-gray-200 shadow-sm shrink-0"
+      fallback="initials"
+      initialsClassName="w-10 h-10 rounded-lg bg-saffron-100 text-saffron-700 border border-saffron-200 flex items-center justify-center text-xs font-semibold shrink-0"
+    />
   );
 }
 

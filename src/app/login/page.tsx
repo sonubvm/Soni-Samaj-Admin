@@ -28,7 +28,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-saffron-50 via-white to-gold-400/10 p-4">
       <div className="card w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-800">Soni Samaj Admin</h1>
+          <h1 className="text-2xl font-bold text-gray-800">Soni Samaj Uttarbhartiya Trust Surat Admin</h1>
           <p className="text-gray-500 text-sm mt-1">
             Sign in with your account email and password from the database
           </p>

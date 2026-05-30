@@ -113,7 +113,7 @@ export default function DashboardPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
-          <p className="text-gray-500 text-sm mt-1">Overview of registered Soni Samaj families</p>
+          <p className="text-gray-500 text-sm mt-1">Overview of registered Soni Samaj Uttarbhartiya Trust Surat families</p>
         </div>
         <Link href="/families" className="btn-primary text-sm">
           View All Families

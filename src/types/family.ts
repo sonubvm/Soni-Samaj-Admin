@@ -1,7 +1,11 @@
+export type MaritalStatus = 'Married' | 'Unmarried' | 'Widowed' | 'Divorced';
+
 export interface Person {
   name: string;
   mobile?: string;
   email?: string;
+  photo?: string;
+  maritalStatus?: MaritalStatus;
 }
 
 export interface Parent {
@@ -10,6 +14,13 @@ export interface Parent {
   income?: number;
   education?: string;
   mobile?: string;
+  photo?: string;
+}
+
+export interface Spouse {
+  name?: string;
+  mobile?: string;
+  photo?: string;
 }
 
 export interface CoResident {
@@ -19,6 +30,7 @@ export interface CoResident {
   age?: number;
   occupation?: string;
   mobile?: string;
+  photo?: string;
 }
 
 export interface Child {
@@ -26,6 +38,7 @@ export interface Child {
   name: string;
   gender: 'Male' | 'Female' | 'Other';
   dob?: string;
+  photo?: string;
   studentType?: 'School' | 'College';
   school: {
     name?: string;
@@ -57,6 +70,7 @@ export interface Family {
     father: Parent;
     mother: Parent;
   };
+  spouse?: Spouse;
   coResidents: CoResident[];
   children: Child[];
   totalFamilyIncome: number;

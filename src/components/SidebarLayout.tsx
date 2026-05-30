@@ -48,7 +48,7 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
           <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
             <Shield className="w-4 h-4" />
           </div>
-          <h1 className="text-lg font-bold">Soni Samaj</h1>
+          <h1 className="text-lg font-bold">Soni Samaj Uttarbhartiya Trust Surat</h1>
         </div>
         <button
           onClick={toggleSidebar}
@@ -82,7 +82,7 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
               <Shield className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="text-lg font-bold leading-tight">Soni Samaj</h1>
+              <h1 className="text-lg font-bold leading-tight">Soni Samaj Uttarbhartiya Trust Surat</h1>
               <p className="text-xs text-white/70">Admin Panel</p>
             </div>
           </div>
